@@ -200,3 +200,6 @@ test.py
 
 # course json directory
 courses/
+
+# for files & generated code that you don't want to check-in
+playground/
