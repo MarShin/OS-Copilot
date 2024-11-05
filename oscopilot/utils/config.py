@@ -100,6 +100,7 @@ def setup_config():
         level=logging.INFO,
         format=f'[{args.logging_prefix}] %(asctime)s - %(levelname)s - %(message)s'
     )
+    logging.info(f"args: {args}")
 
     return args
 

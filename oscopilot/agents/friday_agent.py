@@ -54,13 +54,16 @@ class FridayAgent(BaseAgent):
         self.planner.reset_plan()
         self.reset_inner_monologue()
         sub_tasks_list = self.planning(task)
+        logging.info(f"[FridayAgent]_run: The task list obtained after planning is\n{sub_tasks_list})")
         print("The task list obtained after planning is: {}".format(sub_tasks_list))
 
         while self.planner.sub_task_list:
             try:
                 sub_task = self.planner.sub_task_list.pop(0)
                 execution_state = self.executing(sub_task, task)
+                logging.info(f"[FridayAgent]_run: ExecutionState (after executing): {execution_state}")
                 isTaskCompleted, isReplan = self.self_refining(sub_task, execution_state)
+                logging.info(f"[FridayAgent]_run: (isTaskCompleted, isReplan): ({isTaskCompleted}, {isReplan})")
                 if isReplan: continue
                 if isTaskCompleted:
                     print("The execution of the current sub task has been successfully completed.")
@@ -91,17 +94,21 @@ class FridayAgent(BaseAgent):
         isReplan = False
         score = 0
         state, node_type, description, code, result, relevant_code = execution_state.get_all_state()
+        logging.info(f"[FridayAgent]_self_refining")
         if node_type in ['Python', 'Shell', 'AppleScript']:
             judgement = self.judging(tool_name, state, code, description)
             score = judgement.score
             # need_repair, critique, score, reasoning, error_type 
             if judgement.status == 'Replan':
                 # raise NotImplementedError
+                logging.info(f"[FridayAgent]_self_refining (replan):The current task requires replanning...")
                 print("The current task requires replanning...")
                 new_sub_task_list = self.replanning(tool_name, judgement.critique)
-                print("The new task list obtained after planning is: {}".format(new_sub_task_list))
+                logging.info(f"[FridayAgent]_self_refining: The new task list obtained after replanning is:\n {new_sub_task_list}")
+                print("The new task list obtained after replanning is: {}".format(new_sub_task_list))
                 isReplan = True
             elif judgement.status == 'Amend':
+                logging.info(f"[FridayAgent]_self_refining (amend)")
                 repairing_result = self.repairing(tool_name, code, description, state, judgement.critique, judgement.status)
                 if repairing_result.status == 'Complete':
                     isTaskCompleted = True
@@ -163,9 +170,10 @@ class FridayAgent(BaseAgent):
 
         The method dynamically adapts the execution strategy based on the type of sub-task, utilizing the executor component for code execution, API interaction, or question-answering as appropriate.
         """
+        logging.info(f"[FridayAgent]_executing: tool_name: {tool_name}\n original_task {original_task}")
         tool_node = self.planner.tool_node[tool_name]
         description = tool_node.description
-        logging.info("The current subtask is: {subtask}".format(subtask=description))
+        logging.info("[FridayAgent]_executing: The current subtask is: {subtask}".format(subtask=description))
         code = ''
         state = None
         # The return value of the current task
@@ -175,7 +183,8 @@ class FridayAgent(BaseAgent):
         pre_tasks_info = self.planner.get_pre_tasks_info(tool_name)
         if node_type == 'Python':
             # retrieve existing tool
-            retrieve_name = self.retriever.retrieve_tool_name(description, 3)
+            #Get top 3 useful tools based on planner's task tool's description
+            retrieve_name = self.retriever.retrieve_tool_name(description, 3) 
             relevant_code = self.retriever.retrieve_tool_code_pair(retrieve_name)
         # task execute step
         if node_type == 'QA':
@@ -183,8 +192,8 @@ class FridayAgent(BaseAgent):
                 result = self.executor.question_and_answer_tool(pre_tasks_info, original_task, original_task)
             else:
                 result = self.executor.question_and_answer_tool(pre_tasks_info, original_task, description)
-            print(result)
-            logging.info(result)
+            #print(result)
+            #logging.info(result)
         else:
             invoke = ''
             # Set up the generation format error handling mechanism
@@ -195,17 +204,16 @@ class FridayAgent(BaseAgent):
                 else:
                     code, invoke = self.executor.generate_tool(tool_name, description, node_type, pre_tasks_info, relevant_code)
             except Exception as e:
-                print("api call failed:", str(e))
+                print("api call /generate tool failed:", str(e))
                 return
             # Execute python tool class code
             state = self.executor.execute_tool(code, invoke, node_type)
             result = state.result
-            logging.info(state)
             output = {
                 "result": state.result,
                 "error": state.error
             }
-            logging.info(f"The subtask result is: {json.dumps(output)}")
+            logging.info(f"[FridayAgent]_executing: The subtask result is:\n{json.dumps(output)}")
 
         return ExecutionState(state, node_type, description, code, result, relevant_code)
     
@@ -277,6 +285,8 @@ class FridayAgent(BaseAgent):
 
         The method iterates, amending the tool's code based on feedback until the code executes correctly or the maximum number of iterations is reached. It leverages the executor component for amending the code and re-evaluating its execution.
         """
+
+        logging.info(f"[FridayAgent]_repairing")
         tool_node = self.planner.tool_node[tool_name]
         next_action = tool_node.next_action
         pre_tasks_info = self.planner.get_pre_tasks_info(tool_name)
@@ -315,6 +325,7 @@ class FridayAgent(BaseAgent):
                     raise NotImplementedError
             else: # The code still needs to be corrected
                 status = 'Amend'
+        logging.info(f"[FridayAgent]_repairing: repairing_result:\n {status}\n{critique}\{score}")
         return RepairingResult(status, code, critique, score, result)
 
     def reset_inner_monologue(self):

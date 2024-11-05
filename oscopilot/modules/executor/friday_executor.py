@@ -5,7 +5,7 @@ import json
 import subprocess
 from pathlib import Path
 from oscopilot.utils.utils import send_chat_prompts, api_exception_mechanism
-
+import logging
 
 
 
@@ -52,6 +52,7 @@ class FridayExecutor(BaseModule):
                 - invoke (str): The specific logic or command to invoke the generated tool.
         """
         relevant_code = json.dumps(relevant_code)
+        logging.info(f"[FridayExcutor]_generate_tool: (type):relevant_code: ({tool_type}):{relevant_code}") 
         if tool_type == 'Python':
             sys_prompt = self.prompt['_SYSTEM_PYTHON_SKILL_AND_INVOKE_GENERATE_PROMPT']
             user_prompt = self.prompt['_USER_PYTHON_SKILL_AND_INVOKE_GENERATE_PROMPT'].format(
@@ -79,6 +80,7 @@ class FridayExecutor(BaseModule):
             invoke = self.extract_information(create_msg, begin_str='<invoke>', end_str='</invoke>')[0]
         else:
             invoke = ''
+        logging.info(f"[FridayExcutor]_generate_tool: \ncode:{code}\ninvoke:{invoke}") 
         return code, invoke
 
     def execute_tool(self, code, invoke, node_type):
@@ -163,7 +165,8 @@ class FridayExecutor(BaseModule):
             code_error=state.error,
         )
         response = send_chat_prompts(sys_prompt, user_prompt, self.llm)
-        judge_json = self.extract_json_from_string(response) 
+        judge_json = self.extract_json_from_string(response)
+        logging.info(f"[FridayExcutor]_judge_tool: judge_json: {judge_json}") 
         print("************************<judge_json>**************************")
         print(judge_json)
         print("************************</judge_json>*************************")
@@ -460,6 +463,7 @@ class FridayExecutor(BaseModule):
             - Writes the content to a file at the specified path, potentially overwriting existing content.
         """
         Path(path).parent.mkdir(parents=True, exist_ok=True)
+        print(f"[friday_executor] line 463 : save_str_to_path")
         with open(path, 'w', encoding='utf-8') as f:
             lines = content.strip().splitlines()
             content = '\n'.join(lines)

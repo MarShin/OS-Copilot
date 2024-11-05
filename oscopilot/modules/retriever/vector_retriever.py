@@ -1,7 +1,7 @@
 from oscopilot.modules.base_module import BaseModule
 from oscopilot.utils.utils import send_chat_prompts
 import json
-
+import logging
 
 class FridayRetriever(BaseModule):
     """
@@ -70,8 +70,11 @@ class FridayRetriever(BaseModule):
             task_description=task,
             tool_code_pair=tool_code_pair
         )
+
         response = send_chat_prompts(sys_prompt, user_prompt, self.llm)
         tool_name = self.extract_information(response, '<action>', '</action>')[0]
+        logging.info(f"[FridayRetriever]_tool_code_filter: tool_name {tool_name}") 
+        
         code = ''
         if tool_name:
             code = self.tool_manager.get_tool_code(tool_name)
