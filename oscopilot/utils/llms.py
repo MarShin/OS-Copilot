@@ -5,7 +5,7 @@ import time
 import requests
 import json
 from dotenv import load_dotenv
-from vision_utils import encode_image, screen_capture
+from .vision_utils import encode_image, screen_capture
 
 load_dotenv(override=True)
 MODEL_NAME = os.getenv('MODEL_NAME')
@@ -58,11 +58,16 @@ class OpenAI:
             str: The content of the first message in the response from the OpenAI API.
 
         """
-        response = openai.chat.completions.create(
-            model=self.model_name,
-            messages=messages,
-            temperature=temperature
-        )
+        try:
+            response = openai.chat.completions.create(
+                model=self.model_name,
+                messages=messages,
+                temperature=temperature
+            )
+        except Exception as e:
+            if str(e) == "Rate limit exceeded":
+                time.sleep(61)
+                logging.info(f"api call failed: {e}. Retrying in {60} seconds...")
 
         if len(prefix) > 0 and prefix[-1] != " ":
             prefix += " "
@@ -228,4 +233,4 @@ def test_vision():
 
 if __name__ == '__main__':
     #main()
-    #test_vision()
+    test_vision()
