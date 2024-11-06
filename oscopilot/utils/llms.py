@@ -65,9 +65,14 @@ class OpenAI:
                 temperature=temperature
             )
         except Exception as e:
-            if str(e) == "Rate limit exceeded":
+            if "Rate limit exceeded" in str(e):
                 time.sleep(61)
                 logging.info(f"api call failed: {e}. Retrying in {60} seconds...")
+                response = openai.chat.completions.create(
+                    model=self.model_name,
+                    messages=messages,
+                    temperature=temperature
+                )
 
         if len(prefix) > 0 and prefix[-1] != " ":
             prefix += " "
