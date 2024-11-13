@@ -1,7 +1,7 @@
 langchain/
 guidance/
 Auto-GPT/
-
+command.txt
 /log
 /examples/log/*
 working_dir/*.log
