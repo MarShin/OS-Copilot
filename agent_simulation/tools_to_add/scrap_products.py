@@ -4,7 +4,8 @@ from selenium_utils.extract_product_data import extract_product_details
 from selenium_utils.json_products_data import save_results_to_json
 import time 
 def scrap_products():
-    """Scrape product details.
+    """
+    Scrape product data including id, name, price, and packing info.
     
     Args:
     

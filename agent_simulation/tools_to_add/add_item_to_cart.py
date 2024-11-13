@@ -2,7 +2,9 @@ from selenium_utils.reconnect_driver import reconnect_driver
 from selenium.webdriver.common.by import By
 
 def add_item_to_cart(product_code):
-    """Add the item with the specified product code to the cart.
+    """
+    Add the item with the specified product code to the cart.
+    
     Args:
         product_code(str): the product id to be added to cart
     
