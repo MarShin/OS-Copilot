@@ -64,7 +64,7 @@ class FridayPlanner(BaseModule):
         )
         response = send_chat_prompts(sys_prompt, user_prompt, self.llm, prefix="Overall")
         decompose_json = self.extract_json_from_string(response)
-        logging.info(f"[FridayPlanner]_decompose_task: decompose_json {response}")
+        logging.info(f"[FridayPlanner]_decompose_task: (extract json from LLM raw)\n{response}")
         # Building tool graph and topological ordering of tools
         if decompose_json != 'No JSON data found in the string.':
             self.create_tool_graph(decompose_json)
@@ -139,12 +139,12 @@ class FridayPlanner(BaseModule):
         if return_val:
             if node_type=='Code':
                 return_val = self.extract_information(return_val, "<return>", "</return>")
-                print("************************<return>**************************")
+                print("***[FridayPlanner]_update_tool***<return>**************************")
                 print(return_val)
-                print("************************</return>*************************")
-                logging.info("************************<return>**************************")
+                print("***[FridayPlanner]_update_tool***<return>**************************")
+                logging.info("***[FridayPlanner]_update_tool***<return>**************************")
                 logging.info(return_val)
-                logging.info("************************<return>**************************")  
+                logging.info("***[FridayPlanner]_update_tool***<return>**************************")
             if return_val != 'None':
                 self.tool_node[tool]._return_val = return_val
         if relevant_code:

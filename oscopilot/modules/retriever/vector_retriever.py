@@ -73,11 +73,11 @@ class FridayRetriever(BaseModule):
 
         response = send_chat_prompts(sys_prompt, user_prompt, self.llm)
         tool_name = self.extract_information(response, '<action>', '</action>')[0]
-        logging.info(f"[FridayRetriever]_tool_code_filter: tool_name {tool_name}") 
-        
         code = ''
         if tool_name:
             code = self.tool_manager.get_tool_code(tool_name)
+            logging.info(f"[FridayRetriever]_tool_code_filter (Filters and retrieves the code for an tool relevant to the specified task):\ntool_name: {tool_name}\ntool_code:\n{code}") 
+        
         return code
 
     def retrieve_tool_description(self, tool_name):
