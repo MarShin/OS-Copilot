@@ -1,6 +1,3 @@
-from selenium_utils.reconnect_driver import reconnect_driver
-from selenium.webdriver.common.by import By
-
 def add_item_to_cart(product_code):
     """
     Add the item with the specified product code to the cart.
@@ -13,6 +10,10 @@ def add_item_to_cart(product_code):
         
     """
     try:
+        from selenium_utils.reconnect_driver import reconnect_driver
+        from selenium.webdriver.common.by import By
+
+        # Reconnect to current broswer
         driver = reconnect_driver()
         product = driver.find_element(By.CSS_SELECTOR, f'div[data-id="{product_code}"]')
         add_to_cart_button = product.find_element(By.CLASS_NAME, 'sepaButton.add-to-cart-button')

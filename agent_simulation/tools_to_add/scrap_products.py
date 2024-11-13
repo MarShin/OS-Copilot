@@ -1,8 +1,3 @@
-from selenium_utils.reconnect_driver import reconnect_driver
-from selenium.webdriver.common.by import By
-from selenium_utils.extract_product_data import extract_product_details
-from selenium_utils.json_products_data import save_results_to_json
-import time 
 def scrap_products():
     """
     Scrape product data including id, name, price, and packing info.
@@ -14,6 +9,13 @@ def scrap_products():
     """
 
     try:
+        from selenium_utils.reconnect_driver import reconnect_driver
+        from selenium.webdriver.common.by import By
+        from selenium_utils.extract_product_data import extract_product_details
+        from selenium_utils.json_products_data import save_results_to_json
+        import time
+        
+        # Reconnect to current broswer
         driver = reconnect_driver()
         # Find all product elements
         product_items = driver.find_elements(By.CLASS_NAME, 'product-brief-wrapper')

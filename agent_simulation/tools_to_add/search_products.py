@@ -1,7 +1,3 @@
-from selenium_utils.reconnect_driver import reconnect_driver
-from selenium.webdriver.common.by import By
-from selenium_utils.click_btn import click_btn
-import time 
 def search_products(text):
     """
     Search products by locate the input text box, type the text, and click the search button.
@@ -14,8 +10,12 @@ def search_products(text):
     """
 
     try:
-        # Wait for the page to load
-        # Locate the input text box by its class name
+        from selenium_utils.reconnect_driver import reconnect_driver
+        from selenium.webdriver.common.by import By
+        from selenium_utils.click_btn import click_btn
+        import time 
+
+        # Reconnect to current broswer
         driver = reconnect_driver()
         search_input = driver.find_element(By.CLASS_NAME, "SuggestionSearch-input")
         search_input.clear()  # Clear any existing text
