@@ -6,6 +6,7 @@ def save_results_to_json(results, filename= os.path.join(cur_dir, 'product_data'
         for result in results:
             json.dump(result, json_file, ensure_ascii=False)  # Ensure ASCII is not forced
             json_file.write('\n')  # Write a new line after each JSON object
+    return filename
             
 def load_results_from_json(filename= os.path.join(cur_dir, 'product_data', 'product_data.json')):
     results = []

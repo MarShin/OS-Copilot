@@ -76,7 +76,7 @@ class OpenAI:
 
         if len(prefix) > 0 and prefix[-1] != " ":
             prefix += " "
-        logging.info(f"{prefix}Response: {response.choices[0].message.content}")
+        logging.info(f"{prefix}Raw Response from LLM: {response.choices[0].message.content}")
 
         return response.choices[0].message.content
 

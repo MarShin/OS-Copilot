@@ -27,8 +27,8 @@ def scrap_products():
                 results.append(product_details)
 
         print(f"[{(__name__)}]: Scraped {len(results)} products")
-        save_results_to_json(results)
-        print(f"[{(__name__)}]: Saved the results to json ./product_data/product_data.json")
+        product_data_save_path = save_results_to_json(results)
+        print(f"[{(__name__)}]: Saved the results to json {product_data_save_path}")
         return results
     except Exception as e:
         print(f"[{(__name__)}]:Unable to scrap products: {e}")

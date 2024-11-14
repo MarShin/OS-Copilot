@@ -98,7 +98,7 @@ def setup_config():
     logging.basicConfig(
         filename=os.path.join(args.logging_filedir, args.logging_filename),
         level=logging.INFO,
-        format=f'[{args.logging_prefix}] %(asctime)s - %(levelname)s - %(message)s'
+        format=f'[%(asctime)s - %(levelname)s - %(message)s]'
     )
     logging.info(f"args: {args}")
 
