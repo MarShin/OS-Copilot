@@ -55,7 +55,7 @@ def setup_config():
     parser = argparse.ArgumentParser(description='Inputs')
 
     parser.add_argument('--generated_tool_repo_path', type=str, default='oscopilot/tool_repository/generated_tools', help='generated tool repo path')
-    parser.add_argument('--working_dir', type=str, default='working_dir', help='working dir path')
+    parser.add_argument('--working_dir', type=str, default='selenium_utils', help='working dir path')
     parser.add_argument('--query', type=str, default=None, help='Enter your task')
     parser.add_argument('--query_file_path', type=str, default='', help='Enter the path of the files for your task or leave empty if not applicable')
     parser.add_argument('--max_repair_iterations', type=int, default=3, help='Sets the max number of repair attempts. Default is 3.')

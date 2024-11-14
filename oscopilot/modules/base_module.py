@@ -47,6 +47,7 @@ class BaseModule:
             message = message[_end + len(end_str):]
             _begin = message.find(begin_str)
             _end = message.find(end_str)
+        logging.info(f"[BaseModule]_extract_information: begin:{begin_str} end: {end_str} in message")
         return result  
 
     def extract_json_from_string(self, text):

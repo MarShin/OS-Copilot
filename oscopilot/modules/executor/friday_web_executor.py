@@ -70,7 +70,7 @@ class FridayWebExecutor(BaseModule):
             invoke = self.extract_information(create_msg, begin_str='<invoke>', end_str='</invoke>')[0]
         else:
             invoke = ''
-        logging.info(f"[FridayWebExcutor]_generate_tool (After): \ncode:{code}\ninvoke:{invoke}") 
+        logging.info(f"[FridayWebExcutor]_generate_tool (After LLM): \ncode:\n{code}\ninvoke:\n{invoke}") 
         return code, invoke
 
     def execute_tool(self, code, invoke, node_type):
@@ -100,9 +100,12 @@ class FridayWebExecutor(BaseModule):
             info = "\n" + '''print("<return>")''' + "\n" + "print(result)" +  "\n" + '''print("</return>")'''
             code = code + '\nresult=' + invoke + info
         # state = EnvState(command=code)
-        print("************************<code>**************************")
-        print(code)
-        print("************************</code>*************************")
+        print("[FridayWebExecutor] execute_tool*****<code>****with added <return></return>********")
+        print(f"\n{code}")
+        print("[FridayWebExecutor] execute_tool*****<code>****with added <return></return>********")
+        logging.info("[FridayWebExecutor] execute_tool*****<code>****with added <return></return>********")
+        logging.info(f"\n{code}")
+        logging.info("[FridayWebExecutor] execute_tool*****<code>****with added <return></return>********")
         # for output_line_dic in self.environment.step(code):
         #     if output_line_dic['format'] == 'active_line':
         #         continue
@@ -114,10 +117,14 @@ class FridayWebExecutor(BaseModule):
         # state.pwd = self.environment.working_dir
         # state.ls = subprocess.run(['ls'], cwd=self.environment.working_dir, capture_output=True, text=True).stdout
         state = self.environment.step(node_type, code)  # node_type
-        print("************************<state>**************************")
-        print(state)
+        print("****************<state>*****after .step*************")
+        print(f"\n{state}")
         # print("error: " + state.error + "\nresult: " + state.result + "\npwd: " + state.pwd + "\nls: " + state.ls)
-        print("************************</state>*************************") 
+        print("****************<state>*****after .step*************")
+        logging.info("****************<state>*****after .step*************")
+        logging.info(f"\n{state}")
+        # print("error: " + state.error + "\nresult: " + state.result + "\npwd: " + state.pwd + "\nls: " + state.ls)
+        logging.info("****************<state>*****after .step*************")
         return state
 
     @api_exception_mechanism(max_retries=3)

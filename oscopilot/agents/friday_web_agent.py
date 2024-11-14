@@ -61,7 +61,7 @@ class FridayWebAgent(BaseAgent):
             try:
                 sub_task = self.planner.sub_task_list.pop(0)
                 execution_state = self.executing(sub_task, task)
-                logging.info(f"[FridayWebAgent]_run: ExecutionState (after executing): {execution_state}")
+                logging.info(f"[FridayWebAgent]_run: ExecutionState (after executing):\nExecutionState({execution_state})")
                 isTaskCompleted, isReplan = self.self_refining(sub_task, execution_state)
                 logging.info(f"[FridayWebAgent]_run: (isTaskCompleted, isReplan): ({isTaskCompleted}, {isReplan})")
                 if isReplan: continue
@@ -93,10 +93,11 @@ class FridayWebAgent(BaseAgent):
         isTaskCompleted = False
         isReplan = False
         score = 0
-        state, node_type, description, code, result, relevant_code = execution_state.get_all_state()
         logging.info(f"[FridayWebAgent]_self_refining")
-        if node_type in ['Python', 'Shell', 'AppleScript']:
+        state, node_type, description, code, result, relevant_code = execution_state.get_all_state()
+        if node_type in ['Python']:
             judgement = self.judging(tool_name, state, code, description)
+            logging.info(f"[FridayWebAgent]_self_refining (judgement):\n{judgement}")
             score = judgement.score
             # need_repair, critique, score, reasoning, error_type 
             if judgement.status == 'Replan':
@@ -125,11 +126,13 @@ class FridayWebAgent(BaseAgent):
                 isTaskCompleted = True
             if node_type == 'Python' and isTaskCompleted and score >= self.score:
                 self.executor.store_tool(tool_name, code)
+                logging.info("[FridayWebAgent] self_refining (store tool): "+ "{} has been stored in the tool repository.".format(tool_name))
                 print("{} has been stored in the tool repository.".format(tool_name))
         else: 
             isTaskCompleted = True
         if isTaskCompleted:
             self.inner_monologue.result = result
+            logging.info(f"[FridayWebAgent] self_refine: To update tool after isTaskCompleted: {isTaskCompleted}")
             self.planner.update_tool(tool_name, result, relevant_code, True, node_type)
         return isTaskCompleted, isReplan
 
@@ -198,11 +201,7 @@ class FridayWebAgent(BaseAgent):
             invoke = ''
             # Set up the generation format error handling mechanism
             try:
-                if node_type == 'API':
-                    api_path = self.executor.extract_API_Path(description)
-                    code = self.executor.api_tool(description, api_path, pre_tasks_info)
-                else:
-                    code, invoke = self.executor.generate_tool(tool_name, description, node_type, pre_tasks_info, relevant_code)
+                code, invoke = self.executor.generate_tool(tool_name, description, node_type, pre_tasks_info, relevant_code)
             except Exception as e:
                 print("api call /generate tool failed:", str(e))
                 return

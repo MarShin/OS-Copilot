@@ -135,16 +135,16 @@ class FridayPlanner(BaseModule):
         Side Effects:
             Updates the information of the specified tool node within the tool graph.
         """
-        logging.info(f"[FridayPlanner]_update_tool")
+        logging.info(f"[FridayPlanner]_update_tool with return_val: {return_val}")
         if return_val:
             if node_type=='Code':
                 return_val = self.extract_information(return_val, "<return>", "</return>")
-                print("***[FridayPlanner]_update_tool***<return>**************************")
+                print("***[FridayPlanner]_update_tool***<return>******extracted********")
                 print(return_val)
-                print("***[FridayPlanner]_update_tool***<return>**************************")
-                logging.info("***[FridayPlanner]_update_tool***<return>**************************")
+                print("***[FridayPlanner]_update_tool***<return>******extracted********")
+                logging.info("***[FridayPlanner]_update_tool***<return>******extracted********")
                 logging.info(return_val)
-                logging.info("***[FridayPlanner]_update_tool***<return>**************************")
+                logging.info("***[FridayPlanner]_update_tool***<return>******extracted********")
             if return_val != 'None':
                 self.tool_node[tool]._return_val = return_val
         if relevant_code:

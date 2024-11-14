@@ -4,12 +4,23 @@ from oscopilot import FridayWebExecutor, FridayPlanner, FridayRetriever
 from oscopilot.utils import setup_config, setup_pre_run
 from selenium_utils.create_driver import create_driver
 args = setup_config()
+"""
+#Test when no driver is opened
+driver = create_driver()
 if not args.query:
     args.query = '''Goto HKTV mall website in 'https://www.hktvmall.com/hktv/en/', 
     search for 'tea' products, then add any one product to cart '''
 task = setup_pre_run(args)
 
-driver = create_driver()
+"""
+
+#Test when browser already opened
+if not args.query:
+    args.query = '''Go to 'https://www.hktvmall.com/hktv/en/',
+      search for 'protein' products, then add any one product to cart '''
+task = setup_pre_run(args)
+
+
 
 agent = FridayWebAgent(FridayPlanner, FridayRetriever, FridayWebExecutor, ToolManager, config=args)
 agent.run(task=task)

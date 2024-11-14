@@ -29,7 +29,8 @@ prompt = {
 
         # Python generate and invoke prompts in os
         '_SYSTEM_PYTHON_SKILL_AND_INVOKE_GENERATE_PROMPT': '''
-        You are a world-class programmer that can complete any task by executing code, your goal is to generate the function code that accomplishes the task, along with the function call.
+        You are a world-class programmer that can complete any web interaction task by executing code, your goal is to generate the function code that accomplishes the task, along with the function call.
+        You must aware that it is neccessary to reconnect to a an existing driver in order for the function to work.
         You could only respond with a python function enclosed between ```python and ```, and the corresponding function call enclosed between <invoke> and </invoke>.
         Output Format:
         ```python
@@ -54,14 +55,13 @@ prompt = {
         1. The Python function call must be syntactically correct as per Python standards.
         2. Fill in the corresponding parameters according to the relevant information of the task and the description of the function's parameters.
         3. If the function call requires the output of prerequisite tasks, you can obtain relevant information from 'Information of Prerequisite Tasks'.
-        4. The parameter information should be written directly into the function call, rather than being passed as variables to the function. 
-        5. The generated function call should be a single line and should not include any additional text or comments.
+        4. The generated function call should be a single line and should not include any additional text or comments.
         ''',
 
         '_USER_PYTHON_SKILL_AND_INVOKE_GENERATE_PROMPT': '''
         User's information is as follows:
         System Version: {system_version}
-        System language: simplified chinese
+        System language: English
         Working Directory: {working_dir}
         Task Name: {task_name}
         Task Description: {task_description}     
@@ -69,6 +69,7 @@ prompt = {
         Relevant Code: {relevant_code}
         Detailed description of user information:
         1. 'Working Directory' represents the working directory. It may not necessarily be the same as the current working directory. If the files or folders mentioned in the task do not specify a particular directory, then by default, they are assumed to be in the working directory. This can help you understand the paths of files or folders in the task to facilitate your generation of the call.
+        There is also some utilities function in the working directory which is useful for import during generating code.
         2. 'Information of Prerequisite Tasks' provides relevant information about the prerequisite tasks for the current task, encapsulated in a dictionary format. The key is the name of the prerequisite task, and the value consists of two parts: 'description', which is the description of the task, and 'return_val', which is the return information of the task.
         3. 'Relevant Code' provides some function codes that may be capable of solving the current task.
 
@@ -77,7 +78,7 @@ prompt = {
 
         # Python amend and invoke prompts in os
         '_SYSTEM_PYTHON_SKILL_AMEND_AND_INVOKE_PROMPT': '''
-        You are an expert in Python programming, with a focus on diagnosing and resolving code issues.
+        You are an expert in Python programming, with a focus on diagnosing and resolving code issues specifically in the context of website interaction with selenium.
         Your goal is to precisely identify the reasons for failure in the existing Python code and implement effective modifications to ensure it accomplishes the intended task without errors.
         You should only respond with a python code and a function call.
         Python code in the format as described below:
@@ -89,6 +90,13 @@ prompt = {
         2. Task Description Analysis: Analyze the way the code is called based on the current task, the generated code, and the Information of Prerequisite Tasks.
         3. Generating function call: Construct the function call statement based on the analysis results above.
         4. Output Format: The final output should include the function call, which must be enclosed in <invoke></invoke> tags. For example, <invoke>function()</invoke>.     
+        
+        Output Format:
+        ```python
+        def python_function():
+            # function code
+        ```
+        <invoke>python_function(arg1, arg2, ...)</invoke>
 
         And the code you write should also follow the following criteria:
         1. You must keep the original function name.
@@ -244,9 +252,9 @@ prompt = {
                         "type": "Python"
                     }
                     "pick_one_product"{
-                        "description": "Given the scrapped product data, pick any one of the product and return its id",
+                        "description": "Given the scrapped product data, pick any one of the product and return its product code",
                         "dependencies": [scrap_products],
-                        "type": "python"
+                        "type": "QA"
                     }
                     "add_item_to_cart" : {
                         "description": "Add the selected product to cart after pick_one_product",
