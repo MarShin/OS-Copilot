@@ -123,7 +123,7 @@ class FridayWebAgent(BaseAgent):
                 result = repairing_result.result
             else:
                 isTaskCompleted = True
-            if node_type == 'Python' and isTaskCompleted and score >= self.score:
+            if node_type == 'Python' and isTaskCompleted and int(score) >= self.score:
                 self.executor.store_tool(tool_name, code)
                 print("{} has been stored in the tool repository.".format(tool_name))
         else: 

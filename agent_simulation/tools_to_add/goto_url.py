@@ -19,3 +19,4 @@ def goto_url(url):
     
     except Exception as e:
         print(f"[{(__name__)}]: {e}")
+

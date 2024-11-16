@@ -3,9 +3,10 @@ def scrap_products():
     Scrape product data including id, name, price, and packing info.
     
     Args:
+    None
     
     Return:
-    None
+    The first item of the list
     """
 
     try:
@@ -29,8 +30,11 @@ def scrap_products():
         print(f"[{(__name__)}]: Scraped {len(results)} products")
         save_results_to_json(results)
         print(f"[{(__name__)}]: Saved the results to json ./product_data/product_data.json")
-        return results
+        if results:
+            return results[0]
+        else:
+            return None
     except Exception as e:
         print(f"[{(__name__)}]:Unable to scrap products: {e}")
         return None
-        
+

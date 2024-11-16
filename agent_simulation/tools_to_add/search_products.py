@@ -13,7 +13,7 @@ def search_products(text):
         from selenium_utils.reconnect_driver import reconnect_driver
         from selenium.webdriver.common.by import By
         from selenium_utils.click_btn import click_btn
-        import time 
+        import time
 
         # Reconnect to current broswer
         driver = reconnect_driver()
@@ -29,5 +29,3 @@ def search_products(text):
     except Exception as e:
         print(f"[{(__name__)}]: Error occurred during the search: {e}")
         
-
-

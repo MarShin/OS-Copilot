@@ -18,7 +18,7 @@ def add_item_to_cart(product_code):
         product = driver.find_element(By.CSS_SELECTOR, f'div[data-id="{product_code}"]')
         add_to_cart_button = product.find_element(By.CLASS_NAME, 'sepaButton.add-to-cart-button')
         add_to_cart_button.click()  # Click the button
-        print(f"[{__name__}]Clicked 'Add to Cart' for product code: {product_code}")
+        print(f"[{__name__}]Successfully clicked 'Add to Cart' for product code: {product_code}")
     except Exception as e:
         print(f"Error adding item to cart: {e}")
         

@@ -66,6 +66,7 @@ class FridayWebExecutor(BaseModule):
 
         create_msg = send_chat_prompts(sys_prompt, user_prompt, self.llm)
         code = self.extract_code(create_msg, tool_type)
+        code = re.sub(r'<invoke>.*?</invoke>', '', code, flags=re.DOTALL)
         if tool_type == 'Python':
             invoke = self.extract_information(create_msg, begin_str='<invoke>', end_str='</invoke>')[0]
         else:
@@ -220,6 +221,7 @@ class FridayWebExecutor(BaseModule):
             )
         amend_msg = send_chat_prompts(sys_prompt, user_prompt, self.llm)
         new_code = self.extract_python_code(amend_msg)
+        new_code = re.sub(r'<invoke>.*?</invoke>', '', new_code, flags=re.DOTALL)
         invoke = self.extract_information(amend_msg, begin_str='<invoke>', end_str='</invoke>')[0]
         return new_code, invoke
 

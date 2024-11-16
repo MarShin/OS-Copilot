@@ -7,6 +7,8 @@ import json
 from dotenv import load_dotenv
 from .vision_utils import encode_image, screen_capture
 
+from openai import OpenAI
+
 load_dotenv(override=True)
 MODEL_NAME = os.getenv('MODEL_NAME')
 MODEL_TYPE = os.getenv('MODEL_TYPE')
@@ -59,7 +61,13 @@ class OpenAI:
 
         """
         try:
-            response = openai.chat.completions.create(
+            # response = openai.chat.completions.create(
+            #     model=self.model_name,
+            #     messages=messages,
+            #     temperature=temperature
+            # )
+            client = openai.OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
+            response = client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
                 temperature=temperature
@@ -68,7 +76,13 @@ class OpenAI:
             if "Rate limit exceeded" in str(e):
                 time.sleep(61)
                 logging.info(f"api call failed: {e}. Retrying in {60} seconds...")
-                response = openai.chat.completions.create(
+                # response = openai.chat.completions.create(
+                #     model=self.model_name,
+                #     messages=messages,
+                #     temperature=temperature
+                # )
+                client = openai.OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
+                response = client.chat.completions.create(
                     model=self.model_name,
                     messages=messages,
                     temperature=temperature

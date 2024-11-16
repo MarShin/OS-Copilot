@@ -30,7 +30,7 @@ prompt = {
         # Python generate and invoke prompts in os
         '_SYSTEM_PYTHON_SKILL_AND_INVOKE_GENERATE_PROMPT': '''
         You are a world-class programmer that can complete any task by executing code, your goal is to generate the function code that accomplishes the task, along with the function call.
-        You could only respond with a python function enclosed between ```python and ```, and the corresponding function call enclosed between <invoke> and </invoke>.
+        You could only respond with a python function enclosed between ```python and ```, and the corresponding function call MUST enclosed between <invoke> and </invoke>. Please validate the function call enclosed between <invoke> and </invoke>.
         Output Format:
         ```python
         def python_function():
@@ -49,6 +49,10 @@ prompt = {
         8. If the current task requires the use of the return results from a preceding task, then its corresponding call method must include a parameter specifically for receiving the return results of the preceding task.
         9. If the current task depends on the results from a previous task, the function must include a parameter designed to accept the results from that previous task.
         10. If the code involves the output of file paths, ensure that the output includes the files' absolute path.
+        11. Do not modify the 'Relevant Code' parameters.
+        12. Do not add extra parameters in the 'Relevant Code'.
+        13. The python codes MUST be no syntax errors.
+        14. Do not modify the parameters names.
 
         And the function call should follow the following criteria:
         1. The Python function call must be syntactically correct as per Python standards.
@@ -56,6 +60,7 @@ prompt = {
         3. If the function call requires the output of prerequisite tasks, you can obtain relevant information from 'Information of Prerequisite Tasks'.
         4. The parameter information should be written directly into the function call, rather than being passed as variables to the function. 
         5. The generated function call should be a single line and should not include any additional text or comments.
+        6. Do not pass previous function calls as parameters, you should pass the exact values as parameters.
         ''',
 
         '_USER_PYTHON_SKILL_AND_INVOKE_GENERATE_PROMPT': '''
@@ -87,7 +92,7 @@ prompt = {
         function call in the format as described below:
         1. Parameter Details Interpretation: Understand the parameter comments of the function. This will help select the correct parameters to fill in the function call.
         2. Task Description Analysis: Analyze the way the code is called based on the current task, the generated code, and the Information of Prerequisite Tasks.
-        3. Generating function call: Construct the function call statement based on the analysis results above.
+        3. Generating function call: Construct the function call statement based on the analysis results above only enclosed in <invoke></invoke> tags. For example, <invoke>function()</invoke>. Do not call the function directly in the Python code section, i.e. ```python ```.
         4. Output Format: The final output should include the function call, which must be enclosed in <invoke></invoke> tags. For example, <invoke>function()</invoke>.     
 
         And the code you write should also follow the following criteria:
@@ -161,6 +166,8 @@ prompt = {
         5. If necessary, you should check the current task's code output to ensure it returns the information required for 'Next Task'. If it does not, then the current task can be considered incomplete.
         6. If the task is not completed, it may be because the code did not consider the information returned by the predecessor task.
         7. The JSON response must be enclosed between ```json and ```.
+        8. Please validate the JSON format is correct.
+        9. If the Code Output contains "successfully", the task MUST be considered completed.    
         ''',
         '_USER_TASK_JUDGE_PROMPT': '''
         User's information are as follows:
@@ -216,45 +223,175 @@ prompt = {
                 description: The description of the current subtask corresponds to a certain step in task reasoning. 
                 dependencies: This term refers to the list of names of subtasks that the current subtask depends upon, as determined by the reasoning process. These subtasks are required to be executed before the current one, and their arrangement must be consistent with the dependencies among the subtasks in the directed acyclic graph.
                 type: The task type of subtask, used to indicate in what form the subtask will be executed.
-        5. There are five types of subtasks:
+        5. There are two types of subtasks:
                 Python: Python is suited for subtasks that involve complex data handling, analysis, machine learning, or the need to develop cross-platform scripts and applications. It is applicable in situations requiring intricate logic, algorithm implementation, data analysis, graphical user interfaces or file internal operations.
                 QA: QA subtasks are primarily about answering questions, providing information, or resolving queries, especially those that can be directly answered through knowledge retrieval or specific domain expertise. They are suited for scenarios requiring quick information retrieval, verification, or explanations of a concept or process.
-        6. An example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website, search for 'protein', and add 1 product to cart. Then the reasoning process and JSON that stores the subtasks information are as follows: 
+        6. An example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'protein', and add 1 product to cart. Then the reasoning process and JSON that stores the subtasks information are as follows: 
                 Reasoning:
-                    1. Access the Website: The first step is to open the HKTV mall website. This is essential to initiate any search or interaction with the site.
+                    1. Access the Website: The first step is to open the HKTV mall website, URL is provided in the task. This is essential to initiate any search or interaction with the site.
                     2. Search for Products: Using the search functionality helps locate relevant products quickly, specifically those related to "protein."
-                    3. Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews.
-                    4. Add to Cart: The final step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
+                    3. Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
+                    4. Select a Product: Selecting a product involves assessing options based on criteria like price, brand, or reviews.
+                    5. Add to Cart: The final step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
 
                 ```json
                 {
                     "goto_url" : {
-                        "description": "Go to the website for later interactions",
+                        "description": "Go to the website for later interactions.",
                         "dependencies": [],
                         "type" : "Python"
                     },
                     "search_products" : {
                         "description": "search the product by locating the search bar, input text, and click enter.",
-                        "dependencies": [],
+                        "dependencies": ["goto_url"],
                         "type": "Python"
-                    }
+                    },
                     "scrap_products" : {
                         "description": "Scrap the available products data",
-                        "dependencies": [],
+                        "dependencies": ["search_products"],
                         "type": "Python"
-                    }
-                    "pick_one_product"{
-                        "description": "Given the scrapped product data, pick any one of the product and return its id",
-                        "dependencies": [scrap_products],
-                        "type": "python"
-                    }
+                    },
+                    "pick_one_product" : {
+                        "description": "Pick any one of the product and return its product_code.",
+                        "dependencies": ["scrap_products"],
+                        "type": "Python"
+                    },
                     "add_item_to_cart" : {
-                        "description": "Add the selected product to cart after pick_one_product",
-                        "dependencies": [pick_one_product],
+                        "description": "Add the selected product to cart after pick_one_product.",
+                        "dependencies": ["pick_one_product"],
                         "type": "Python"
-                    }          
-                }      
-                ```  
+                    }
+                }
+                ```
+        7. Another example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'coca cola' and '7 up', and add both products to cart. Then the reasoning process and JSON that stores the subtasks information are as follows: 
+                Reasoning:
+                    1. Access the Website: The first step is to open the HKTV mall website, URL is provided in the task. This is essential to initiate any search or interaction with the site.
+                    2. Search for Products: Using the search functionality helps locate relevant products quickly, specifically those related to "coca cola."
+                    3. Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
+                    4. Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews.
+                    5. Add to Cart: The next step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
+                    6. Repeat Search for Products: Using the search functionality helps locate relevant products quickly, specifically those related to "7 up."
+                    7. Repeat Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
+                    8. Repeat Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews.
+                    9. Repeat Add to Cart: The next step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
+
+                ```json
+                {
+                    "goto_url" : {
+                        "description": "Go to the website for later interactions.",
+                        "dependencies": [],
+                        "type" : "Python"
+                    },
+                    "search_products_1" : {
+                        "description": "search the product by locating the search bar, input text, and click enter.",
+                        "dependencies": ["goto_url"],
+                        "type": "Python"
+                    },
+                    "scrap_products_1" : {
+                        "description": "Scrap the available products data",
+                        "dependencies": ["search_products_1"],
+                        "type": "Python"
+                    },
+                    "pick_one_product_1" : {
+                        "description": "Pick any one of the product and return its product_code.",
+                        "dependencies": ["scrap_products_1"],
+                        "type": "Python"
+                    },
+                    "add_item_to_cart_1" : {
+                        "description": "Add the selected product to cart after pick_one_product.",
+                        "dependencies": ["pick_one_product_1"],
+                        "type": "Python"
+                    },
+                    "search_products_2" : {
+                        "description": "search the product by locating the search bar, input text, and click enter.",
+                        "dependencies": ["add_item_to_cart_1"],
+                        "type": "Python"
+                    },
+                    "scrap_products_2" : {
+                        "description": "Scrap the available products data",
+                        "dependencies": ["search_products_2"],
+                        "type": "Python"
+                    },
+                    "pick_one_product_2" : {
+                        "description": "Pick any one of the product and return its product_code.",
+                        "dependencies": ["scrap_products_2"],
+                        "type": "Python"
+                    },
+                    "add_item_to_cart_2" : {
+                        "description": "Add the selected product to cart after pick_one_product.",
+                        "dependencies": ["pick_one_product_2"],
+                        "type": "Python"
+                    }
+                }
+                ```
+
+        8. Another example to help you better understand the information that needs to be generated: The task is: I want to cook 'egg fried rice', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. Since 'rice' and 'egg' are the ingredients of 'egg fried rice', so the output is ['rice','egg']. Then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'rice' and 'egg', and add all products to cart. Then the reasoning process and JSON that stores the subtasks information are as follows:
+                Reasoning:
+                    1. Get the ingredients list: The first step is to get the ingredients list of 'egg fried rice', output the ingredients to ['ingredient 1 ','ingredient 2',...]. For example, 'rice' and 'egg' are the ingredients of 'egg fried rice', so the output is ['rice','egg'].
+                    2. Access the Website: Then is to open the HKTV mall website, URL is provided in the task. This is essential to initiate any search or interaction with the site.
+                    3. Search for ingredient 1 'rice': Using the search functionality helps locate relevant products quickly, specifically those related to 'rice'.
+                    4. Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
+                    5. Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews.
+                    6. Add to Cart: The next step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
+                    7. Repeat Search for ingredient 2 'egg': Using the search functionality helps locate relevant products quickly, specifically those related to 'egg'.
+                    8. Repeat Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
+                    9. Repeat Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews.
+                    10. Repeat Add to Cart: The next step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
+
+                ```json
+                {
+                    "get_ingredients_list" : {
+                        "description": "Get the ingredients list of 'egg fried rice', output the ingredients to ['rice','egg',...].",
+                        "dependencies": [],
+                        "type" : "Python"
+                    },
+                    "goto_url" : {
+                        "description": "Go to the website for later interactions.",
+                        "dependencies": [get_ingredients_list],
+                        "type" : "Python"
+                    },
+                    "search_products_1" : {
+                        "description": "search the 'rice' by locating the search bar, input text, and click enter.",
+                        "dependencies": ["goto_url"],
+                        "type": "Python"
+                    },
+                    "scrap_products_1" : {
+                        "description": "Scrap the available products data",
+                        "dependencies": ["search_products_1"],
+                        "type": "Python"
+                    },
+                    "pick_one_product_1" : {
+                        "description": "Pick any one of the product and return its product_code.",
+                        "dependencies": ["scrap_products_1"],
+                        "type": "Python"
+                    },
+                    "add_item_to_cart_1" : {
+                        "description": "Add the selected product to cart after pick_one_product.",
+                        "dependencies": ["pick_one_product_1"],
+                        "type": "Python"
+                    },
+                    "search_products_2" : {
+                        "description": "search the 'egg' by locating the search bar, input text, and click enter.",
+                        "dependencies": ["add_item_to_cart_1"],
+                        "type": "Python"
+                    },
+                    "scrap_products_2" : {
+                        "description": "Scrap the available products data",
+                        "dependencies": ["search_products_2"],
+                        "type": "Python"
+                    },
+                    "pick_one_product_2" : {
+                        "description": "Pick any one of the product and return its product_code.",
+                        "dependencies": ["scrap_products_2"],
+                        "type": "Python"
+                    },
+                    "add_item_to_cart_2" : {
+                        "description": "Add the selected product to cart after pick_one_product.",
+                        "dependencies": ["pick_one_product_2"],
+                        "type": "Python"
+                    }
+                }
+                ```
 
         And you should also follow the following criteria:
         1. Try to break down the task into as few subtasks as possible.
@@ -296,7 +433,7 @@ prompt = {
                 description: The description of the current task corresponds to a certain step in task reasoning. 
                 dependencies: This term refers to the list of names of task that the current task depends upon, as determined by the reasoning process. These tasks are required to be executed before the current one, and their arrangement must be consistent with the dependencies among the tasks.
                 type: The task type of task, used to indicate in what form the task will be executed.
-        5. There are five types of tasks:
+        5. There are two types of tasks:
                 Python: Python is suited for tasks that involve complex data handling, analysis, machine learning, or the need to develop cross-platform scripts and applications. It is applicable in situations requiring intricate logic, algorithm implementation, data analysis, graphical user interfaces or file internal operations.
                 QA: QA tasks are primarily about answering questions, providing information, or resolving queries, especially those that can be directly answered through knowledge retrieval or specific domain expertise. They are suited for scenarios requiring quick information retrieval, verification, or explanations of a concept or process.
         6. An example to help you better understand the information that needs to be generated: The reasoning process analyzed that the reason for the error was that there was no numpy package in the environments, causing it to fail to run. Then the reasoning process and JSON that stores the tasks information are as follows: 
