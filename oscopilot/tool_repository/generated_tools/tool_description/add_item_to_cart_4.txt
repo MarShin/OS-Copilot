@@ -1,0 +1,1 @@
+Add the selected 'fanta' product to cart after pick_one_product

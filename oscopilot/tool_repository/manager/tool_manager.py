@@ -133,6 +133,8 @@ class ToolManager:
         """
         return self.generated_tools.keys()
     
+    def get_all_db_contents(self):
+        return self.vectordb.get()
 
     def get_tool_code(self, tool_name):
         """

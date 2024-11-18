@@ -1,0 +1,1 @@
+Add the selected product to cart after pick_one_product
