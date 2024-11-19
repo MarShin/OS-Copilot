@@ -11,13 +11,15 @@ import sys
 import os
 import re
 from dotenv import load_dotenv
-load_dotenv(dotenv_path='.env', override=True)
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-OPENAI_ORGANIZATION = os.getenv('OPENAI_ORGANIZATION')
 
-EMBED_MODEL_TYPE = os.getenv('EMBED_MODEL_TYPE')
-EMBED_MODEL_NAME = os.getenv('EMBED_MODEL_NAME')
+load_dotenv(dotenv_path=".env", override=True)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_ORGANIZATION = os.getenv("OPENAI_ORGANIZATION")
+
+EMBED_MODEL_TYPE = os.getenv("EMBED_MODEL_TYPE")
+EMBED_MODEL_NAME = os.getenv("EMBED_MODEL_NAME")
 import logging
+
 
 class ToolManager:
     """
@@ -54,8 +56,9 @@ class ToolManager:
         # generated_tools: Store the mapping relationship between descriptions and tools (associated through task names)
         self.generated_tools = {}
         # self.generated_tool_repo_dir = generated_tool_repo_dir
-        self.generated_tool_repo_dir = "/home/teem/Desktop/Project/Group6/OS-Copilot/oscopilot/tool_repository/generated_tools"
-        
+        # self.generated_tool_repo_dir = "/home/teem/Desktop/Project/Group6/OS-Copilot/oscopilot/tool_repository/generated_tools"
+        self.generated_tool_repo_dir = "./oscopilot/tool_repository/generated_tools"
+
         with open(f"{self.generated_tool_repo_dir}/generated_tools.json") as f2:
             self.generated_tools = json.load(f2)
         self.vectordb_path = f"{generated_tool_repo_dir}/vectordb"
@@ -65,7 +68,7 @@ class ToolManager:
         os.makedirs(f"{generated_tool_repo_dir}/tool_code", exist_ok=True)
         os.makedirs(f"{generated_tool_repo_dir}/tool_description", exist_ok=True)
         # Utilize the Chroma database and employ OpenAI Embeddings for vectorization (default: text-embedding-ada-002)
-        
+
         if EMBED_MODEL_TYPE == "OpenAI":
             embedding_function = OpenAIEmbeddings(
                 openai_api_key=OPENAI_API_KEY,
@@ -73,18 +76,19 @@ class ToolManager:
             )
         elif EMBED_MODEL_TYPE == "OLLAMA":
             embedding_function = OllamaEmbeddings(model=EMBED_MODEL_NAME)
-        
+
         self.vectordb = Chroma(
             collection_name="tool_vectordb",
             embedding_function=embedding_function,
             persist_directory=self.vectordb_path,
         )
-        logging.info(f"[ToolManager]_init: \n{self.vectordb.embeddings}\n{self.vectordb._collection}")
+        logging.info(
+            f"[ToolManager]_init: \n{self.vectordb.embeddings}\n{self.vectordb._collection}"
+        )
         assert self.vectordb._collection.count() == len(self.generated_tools), (
             f"Tool Manager's vectordb is not synced with generated_tools.json.\n"
             f"There are {self.vectordb._collection.count()} tools in vectordb but {len(self.generated_tools)} tools in generated_tools.json.\n"
         )
-
 
     @property
     def programs(self):
@@ -101,7 +105,6 @@ class ToolManager:
         for _, entry in self.generated_tools.items():
             programs += f"{entry['code']}\n\n"
         return programs
-    
 
     @property
     def descriptions(self):
@@ -118,7 +121,6 @@ class ToolManager:
         for tool_name, entry in self.generated_tools.items():
             descriptions.update({tool_name: entry["description"]})
         return descriptions
-    
 
     @property
     def tool_names(self):
@@ -132,7 +134,7 @@ class ToolManager:
             KeysView[str]: A view of the dictionary's keys which are the names of the tools.
         """
         return self.generated_tools.keys()
-    
+
     def get_all_db_contents(self):
         return self.vectordb.get()
 
@@ -153,9 +155,8 @@ class ToolManager:
         Raises:
             KeyError: If the tool_name does not exist in the generated_tools dictionary.
         """
-        code = self.generated_tools[tool_name]['code']
-        return code    
-
+        code = self.generated_tools[tool_name]["code"]
+        return code
 
     def add_new_tool(self, info):
         """
@@ -182,12 +183,12 @@ class ToolManager:
         program_code = info["code"]
         program_description = info["description"]
         logging.info(f"[ToolManager]_add_new_tool: \nAdd: {program_name}:\t{program_description}")
-        print(
-            f"\033[33m {program_name}:\n{program_description}\033[0m"
-        )
+        print(f"\033[33m {program_name}:\n{program_description}\033[0m")
         # If this task code already exists in the tool library, delete it and rewrite
         if program_name in self.generated_tools:
-            logging.info(f"[ToolManager]_add_new_tool: \n Tool:{program_name} already exists. Rewriting!")
+            logging.info(
+                f"[ToolManager]_add_new_tool: \n Tool:{program_name} already exists. Rewriting!"
+            )
             print(f"\033[33mTool {program_name} already exists. Rewriting!\033[0m")
             self.vectordb._collection.delete(ids=[program_name])
         # Store the new task code in the vector database and the tool dictionary
@@ -209,11 +210,10 @@ class ToolManager:
         with open(f"{self.generated_tool_repo_dir}/tool_description/{program_name}.txt", "w") as fb:
             fb.write(program_description)
         with open(f"{self.generated_tool_repo_dir}/generated_tools.json", "w") as fc:
-            json.dump(self.generated_tools,fc,indent=4)
+            json.dump(self.generated_tools, fc, indent=4)
         self.vectordb.persist()
         # with open(f"{self.generated_tool_repo_dir}/generated_tools.json") as f2:
         #     self.generated_tools = json.load(f2)
-
 
     def exist_tool(self, tool):
         """
@@ -228,7 +228,6 @@ class ToolManager:
         if tool in self.tool_names:
             return True
         return False
-
 
     def retrieve_tool_name(self, query, k=10):
         """
@@ -264,7 +263,6 @@ class ToolManager:
         for doc, _ in docs_and_scores:
             tool_name.append(doc.metadata["name"])
         return tool_name
-    
 
     def retrieve_tool_description(self, tool_name):
         """
@@ -283,8 +281,7 @@ class ToolManager:
         tool_description = []
         for name in tool_name:
             tool_description.append(self.generated_tools[name]["description"])
-        return tool_description    
-
+        return tool_description
 
     def retrieve_tool_code(self, tool_name):
         """
@@ -304,7 +301,6 @@ class ToolManager:
         for name in tool_name:
             tool_code.append(self.generated_tools[name]["code"])
         return tool_code
-
 
     def delete_tool(self, tool):
         """
@@ -327,9 +323,7 @@ class ToolManager:
         """
         if tool in self.generated_tools:
             self.vectordb._collection.delete(ids=[tool])
-            print(
-            f"\033[33m delete {tool} from vectordb successfully! \033[0m"
-            )              
+            print(f"\033[33m delete {tool} from vectordb successfully! \033[0m")
         # Delete the task from generated_tools.json
         with open(f"{self.generated_tool_repo_dir}/generated_tools.json", "r") as file:
             tool_infos = json.load(file)
@@ -337,31 +331,25 @@ class ToolManager:
             del tool_infos[tool]
         with open(f"{self.generated_tool_repo_dir}/generated_tools.json", "w") as file:
             json.dump(tool_infos, file, indent=4)
-            print(
-            f"\033[33m delete {tool} info from JSON successfully! \033[0m"
-            )            
+            print(f"\033[33m delete {tool} info from JSON successfully! \033[0m")
         # del code
         code_path = f"{self.generated_tool_repo_dir}/tool_code/{tool}.py"
         if os.path.exists(code_path):
             os.remove(code_path)
-            print(
-            f"\033[33m delete {tool} code successfully! \033[0m"
-            )
+            print(f"\033[33m delete {tool} code successfully! \033[0m")
         # del description
         description_path = f"{self.generated_tool_repo_dir}/tool_description/{tool}.txt"
         if os.path.exists(description_path):
             os.remove(description_path)
-            print(
-            f"\033[33m delete {tool} description txt successfully! \033[0m"
-            )   
+            print(f"\033[33m delete {tool} description txt successfully! \033[0m")
         # del args description
         # args_path = f"{self.generated_tool_repo_dir}/args_description/{tool}.txt"
         # if os.path.exists(args_path):
         #     os.remove(args_path)
         #     print(
         #     f"\033[33m delete {tool} args description txt successfully! \033[0m"
-        #     )                
-    
+        #     )
+
 
 def print_error_and_exit(message):
     """
@@ -397,20 +385,16 @@ def add_tool(toolManager, tool_name, tool_path):
         assigned to `self._description` within the code. The description must be enclosed in double
         quotes for it to be successfully extracted.
     """
-    with open(tool_path, 'r') as file:
+    with open(tool_path, "r") as file:
         code = file.read()
-    
+
     pattern = r'"""\s*\n\s*(.*?)[\.\n]'
     match = re.search(pattern, code)
     if match:
         description = match.group(1)
         # print(description)
         # print(type(description))
-        info = {
-            "task_name" : tool_name,
-            "code" : code,
-            "description" : description
-        }
+        info = {"task_name": tool_name, "code": code, "description": description}
         toolManager.add_new_tool(info)
         print(f"Successfully add the tool: {tool_name} with path: {tool_path}")
     else:
@@ -441,7 +425,7 @@ def get_open_api_doc_path():
         str: The absolute path to the 'openapi.json' file.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    open_api_path = os.path.join(script_dir, 'openapi.json')
+    open_api_path = os.path.join(script_dir, "openapi.json")
     return open_api_path
 
 
@@ -459,16 +443,16 @@ def get_open_api_description_pair():
         dict: A dictionary mapping OpenAPI path names to their summary descriptions.
     """
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    open_api_path = os.path.join(script_dir, 'openapi.json')
-    with open(open_api_path, 'r') as file:
+    open_api_path = os.path.join(script_dir, "openapi.json")
+    with open(open_api_path, "r") as file:
         open_api_json = json.load(file)
-    open_api_dict = open_api_json['paths']
+    open_api_dict = open_api_json["paths"]
     open_api_description_pair = {}
     for name, value in open_api_dict.items():
-        if 'post' in value:
-            open_api_description_pair[name] = value['post']['summary']
+        if "post" in value:
+            open_api_description_pair[name] = value["post"]["summary"]
         else:
-            open_api_description_pair[name] = value['get']['summary']
+            open_api_description_pair[name] = value["get"]["summary"]
     return open_api_description_pair
 
 
@@ -494,18 +478,21 @@ def main():
         SystemExit: If no operation type is specified or required arguments are missing,
                     the program will print an error message and exit with a status code of 1.
     """
-    parser = argparse.ArgumentParser(description='Manage generated tools for FRIDAY')
-    
-    parser.add_argument('--generated_tool_repo_path', type=str, default='oscopilot/tool_repository/generated_tools', help='generated tool repo path')
+    parser = argparse.ArgumentParser(description="Manage generated tools for FRIDAY")
 
-    parser.add_argument('--add', action='store_true',
-                        help='Flag to add a new tool')
-    parser.add_argument('--delete', action='store_true',
-                        help='Flag to delete a tool')
-    parser.add_argument('--tool_name', type=str,
-                        help='Name of the tool to be added or deleted')
-    parser.add_argument('--tool_path', type=str,
-                        help='Path of the tool to be added', required='--add' in sys.argv)
+    parser.add_argument(
+        "--generated_tool_repo_path",
+        type=str,
+        default="oscopilot/tool_repository/generated_tools",
+        help="generated tool repo path",
+    )
+
+    parser.add_argument("--add", action="store_true", help="Flag to add a new tool")
+    parser.add_argument("--delete", action="store_true", help="Flag to delete a tool")
+    parser.add_argument("--tool_name", type=str, help="Name of the tool to be added or deleted")
+    parser.add_argument(
+        "--tool_path", type=str, help="Path of the tool to be added", required="--add" in sys.argv
+    )
 
     args = parser.parse_args()
 
