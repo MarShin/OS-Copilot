@@ -5,7 +5,7 @@ import time
 import requests
 import json
 from dotenv import load_dotenv
-from vision_utils import encode_image, screen_capture, screen_capture_pyautogui, base64_encode
+from .vision_utils import encode_image, screen_capture, screen_capture_pyautogui
 
 from openai import OpenAI
 

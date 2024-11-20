@@ -106,5 +106,9 @@
     "pick_one_product_5": {
         "code": "def pick_one_product_5(product_data):\n    \"\"\"\n    Pick any one of the product and return its product_code.\n\n    Args:\n        product_data (list): A list of dictionaries containing product information.\n\n    Returns:\n        str: The product_code of the picked product.\n    \"\"\"\n    try:\n        if product_data:\n            result = product_data[0]['product_code']\n        else:\n            result = None\n\n        print(f\"[{(__name__)}]: Pick the first product with product_code {result}\")\n        return result\n    except Exception as e:\n        print(f\"[{(__name__)}]: Unable to pick the first products: {e}\")\n        return None",
         "description": "Pick any one of the product and return its product_code"
+    },
+    "check_out_page": {
+        "code": "def checkout_out_page(btn_class_name=\"btn-cart\"):\n    \"\"\"\n    Go to the checkout page of the store.\n\n    Args:\n        btn_class_name(str): the class name of the checkout button\n\n    Returns:\n    None\n    \"\"\"\n    try:\n        from selenium_utils.reconnect_driver import reconnect_driver\n        from selenium_utils.click_btn import click_btn\n\n        # LLM first create empty brower\n        driver = reconnect_driver()\n\n        # Go to check out page\n        click_btn(driver, btn_class_name)\n\n    except Exception as e:\n        print(f\"[{(__name__)}]: {e}\")\n",
+        "description": "Go to the checkout page of the store"
     }
 }
