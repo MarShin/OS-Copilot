@@ -109,11 +109,13 @@ def setup_config():
         level=logging.INFO,
         format=f'[{args.logging_prefix}] %(asctime)s - %(levelname)s - %(message)s'
     )
-    logging.info(f"Current using model is {MODEL_TYPE}||{MODEL_NAME}||{OPENAI_BASE_URL}")
-    logging.info(f"Current using embbed model is {EMBED_MODEL_TYPE}||{EMBED_MODEL_NAME}||{MODEL_SERVER}")
+    llm_model = f"Current using model is {MODEL_TYPE}||{MODEL_NAME}||{OPENAI_BASE_URL}"
+    embbed_model = f"Current using embbed model is {EMBED_MODEL_TYPE}||{EMBED_MODEL_NAME}||{MODEL_SERVER}"
+    logging.info(llm_model)
+    logging.info(embbed_model)
     logging.info(f"args: {args}")
 
-    return args
+    return args, llm_model, embbed_model
 
 
 def setup_pre_run(args):

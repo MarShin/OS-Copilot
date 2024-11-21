@@ -229,7 +229,7 @@ prompt = {
         6. An example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'protein', and add 1 product to cart. Then the reasoning process and JSON that stores the subtasks information are as follows: 
                 Reasoning:
                     1. Access the Website: The first step is to open the HKTV mall website, URL is provided in the task. This is essential to initiate any search or interaction with the site.
-                    2. Search for Products: Using the search functionality helps locate relevant products quickly, specifically those related to "protein."
+                    2. Search for Products: Using the search functionality helps locate relevant products quickly, specifically those related to 'protein'.
                     3. Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
                     4. Select a Product: Selecting a product involves assessing options based on criteria like price, brand, or reviews.
                     5. Add to Cart: The final step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
@@ -237,12 +237,12 @@ prompt = {
                 ```json
                 {
                     "goto_url" : {
-                        "description": "Go to the website for later interactions.",
+                        "description": "Go to the website 'https://www.hktvmall.com/hktv/en/' for later interactions.",
                         "dependencies": [],
                         "type" : "Python"
                     },
                     "search_products" : {
-                        "description": "search the product by locating the search bar, input text, and click enter.",
+                        "description": "search the 'protein' by locating the search bar, input text, and click enter.",
                         "dependencies": ["goto_url"],
                         "type": "Python"
                     },
@@ -252,9 +252,9 @@ prompt = {
                         "type": "Python"
                     },
                     "pick_one_product" : {
-                        "description": "Pick any one of the product and return its product_code.",
+                        "description": "Pick one product based on the requested requirements of 'protein' and return its product code.",
                         "dependencies": ["scrap_products"],
-                        "type": "Python"
+                        "type": "QA"
                     },
                     "add_item_to_cart" : {
                         "description": "Add the selected product to cart after pick_one_product.",
@@ -263,27 +263,27 @@ prompt = {
                     }
                 }
                 ```
-        7. Another example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'coca cola' and '7 up', and add both products to cart. Then the reasoning process and JSON that stores the subtasks information are as follows: 
+        7. Another example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'coca cola' and '7 up', and add both products to cart. I have only $100 budget for all items. Then the reasoning process and JSON that stores the subtasks information are as follows: 
                 Reasoning:
                     1. Access the Website: The first step is to open the HKTV mall website, URL is provided in the task. This is essential to initiate any search or interaction with the site.
                     2. Search for Products: Using the search functionality helps locate relevant products quickly, specifically those related to "coca cola."
                     3. Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
-                    4. Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews.
+                    4. Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews. Now I have $100 budget, I can afford a product with $100.
                     5. Add to Cart: The next step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
                     6. Repeat Search for Products: Using the search functionality helps locate relevant products quickly, specifically those related to "7 up."
                     7. Repeat Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
-                    8. Repeat Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews.
+                    8. Repeat Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews. Since the previous product costs $80, now I left $100 - $80 = $20 budget, I can afford a product with $20.
                     9. Repeat Add to Cart: The next step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
 
                 ```json
                 {
                     "goto_url" : {
-                        "description": "Go to the website for later interactions.",
+                        "description": "Go to the website 'https://www.hktvmall.com/hktv/en/' for later interactions.",
                         "dependencies": [],
                         "type" : "Python"
                     },
                     "search_products_1" : {
-                        "description": "search the product by locating the search bar, input text, and click enter.",
+                        "description": "search the 'coca cola' by locating the search bar, input text, and click enter.",
                         "dependencies": ["goto_url"],
                         "type": "Python"
                     },
@@ -293,9 +293,9 @@ prompt = {
                         "type": "Python"
                     },
                     "pick_one_product_1" : {
-                        "description": "Pick any one of the product and return its product_code.",
+                        "description": "Pick one product based on the requested requirements of 'coca cola' and return its product code.",
                         "dependencies": ["scrap_products_1"],
-                        "type": "Python"
+                        "type": "QA"
                     },
                     "add_item_to_cart_1" : {
                         "description": "Add the selected product to cart after pick_one_product.",
@@ -303,7 +303,7 @@ prompt = {
                         "type": "Python"
                     },
                     "search_products_2" : {
-                        "description": "search the product by locating the search bar, input text, and click enter.",
+                        "description": "search the '7 up' by locating the search bar, input text, and click enter.",
                         "dependencies": ["add_item_to_cart_1"],
                         "type": "Python"
                     },
@@ -313,9 +313,9 @@ prompt = {
                         "type": "Python"
                     },
                     "pick_one_product_2" : {
-                        "description": "Pick any one of the product and return its product_code.",
+                        "description": "Pick one product based on the requested requirements of '7 up' and return its product code.",
                         "dependencies": ["scrap_products_2"],
-                        "type": "Python"
+                        "type": "QA"
                     },
                     "add_item_to_cart_2" : {
                         "description": "Add the selected product to cart after pick_one_product.",
@@ -343,10 +343,10 @@ prompt = {
                     "get_ingredients_list" : {
                         "description": "Get the ingredients list of 'egg fried rice', output the ingredients to ['rice','egg',...].",
                         "dependencies": [],
-                        "type" : "Python"
+                        "type" : "QA"
                     },
                     "goto_url" : {
-                        "description": "Go to the website for later interactions.",
+                        "description": "Go to the website 'https://www.hktvmall.com/hktv/en/' for later interactions.",
                         "dependencies": [get_ingredients_list],
                         "type" : "Python"
                     },
@@ -361,9 +361,9 @@ prompt = {
                         "type": "Python"
                     },
                     "pick_one_product_1" : {
-                        "description": "Pick any one of the product and return its product_code.",
+                        "description": "Pick one product based on the requested requirements of 'rice' and return its product code.",
                         "dependencies": ["scrap_products_1"],
-                        "type": "Python"
+                        "type": "QA"
                     },
                     "add_item_to_cart_1" : {
                         "description": "Add the selected product to cart after pick_one_product.",
@@ -381,9 +381,9 @@ prompt = {
                         "type": "Python"
                     },
                     "pick_one_product_2" : {
-                        "description": "Pick any one of the product and return its product_code.",
+                        "description": "Pick one product based on the requested requirements of 'egg' and return its product code.",
                         "dependencies": ["scrap_products_2"],
-                        "type": "Python"
+                        "type": "QA"
                     },
                     "add_item_to_cart_2" : {
                         "description": "Add the selected product to cart after pick_one_product.",

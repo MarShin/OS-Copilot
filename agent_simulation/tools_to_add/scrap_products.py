@@ -31,7 +31,7 @@ def scrap_products():
         save_results_to_json(results)
         print(f"[{(__name__)}]: Saved the results to json ./product_data/product_data.json")
         if results:
-            return results[0]
+            return results
         else:
             return None
     except Exception as e:
