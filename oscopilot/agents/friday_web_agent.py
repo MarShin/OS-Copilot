@@ -14,7 +14,7 @@ class FridayWebAgent(BaseAgent):
     This agent is designed to process tasks, manage errors, and refine strategies as necessary to ensure successful task completion. It supports dynamic task planning, information retrieval, execution strategy application, and employs a mechanism for self-refinement in case of execution failures.
     """
 
-    def __init__(self, planner, retriever, executor, Tool_Manager, config):
+    def __init__(self, planner, retriever, executor, Tool_Manager, config, selected_llm_index=None):
         """
         Initializes the FridayWebAgent with specified planning, retrieving, and executing strategies, alongside configuration settings.
 
@@ -31,9 +31,9 @@ class FridayWebAgent(BaseAgent):
         super().__init__()
         self.config = config
         tool_manager = Tool_Manager(config.generated_tool_repo_path)
-        self.planner = planner(prompt['planning_prompt'])
-        self.retriever = retriever(prompt['retrieve_prompt'], tool_manager)
-        self.executor = executor(prompt['execute_prompt'], tool_manager, config.max_repair_iterations)
+        self.planner = planner(prompt['planning_prompt'], selected_llm_index)
+        self.retriever = retriever(prompt['retrieve_prompt'], tool_manager, selected_llm_index)
+        self.executor = executor(prompt['execute_prompt'], tool_manager, config.max_repair_iterations, selected_llm_index)
         self.score = self.config.score
         self.task_status = TaskStatusCode.START
         self.inner_monologue = InnerMonologue()

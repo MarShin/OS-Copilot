@@ -12,8 +12,8 @@ class FridayRetriever(BaseModule):
     and utilizes the execution environments and tool library to fulfill its responsibilities.
     """
 
-    def __init__(self, prompt, tool_manager):
-        super().__init__()
+    def __init__(self, prompt, tool_manager, selected_llm_index=None):
+        super().__init__(selected_llm_index)
         self.prompt = prompt
         self.tool_manager = tool_manager
 

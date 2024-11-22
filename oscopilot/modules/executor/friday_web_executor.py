@@ -19,8 +19,8 @@ class FridayWebExecutor(BaseModule):
     for tool execution guidance.
     """
 
-    def __init__(self, prompt, tool_manager, max_iter=3):
-        super().__init__()
+    def __init__(self, prompt, tool_manager, max_iter=3, selected_llm_index=None):
+        super().__init__(selected_llm_index)
         self.prompt = prompt
         self.tool_manager = tool_manager
         self.max_iter = max_iter

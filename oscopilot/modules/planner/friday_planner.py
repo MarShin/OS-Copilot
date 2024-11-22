@@ -14,8 +14,8 @@ class FridayPlanner(BaseModule):
 
     The `FridayPlanner` uses a combination of tool descriptions, environmental state, and language learning models to dynamically create and adjust plans for task execution. It maintains a tool graph to manage task dependencies and execution order, ensuring that tasks are executed in a sequence that respects their interdependencies.
     """
-    def __init__(self, prompt):
-        super().__init__()
+    def __init__(self, prompt, selected_llm_index=None):
+        super().__init__(selected_llm_index)
         self.tool_num = 0
         self.tool_node = {}
         self.prompt = prompt

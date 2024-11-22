@@ -19,6 +19,17 @@ BASE_URL = os.getenv('OPENAI_BASE_URL')
 # add
 MODEL_SERVER = os.getenv('MODEL_SERVER')
 
+def get_llm_config(index=None):
+    if index == 1:
+        return os.getenv('OPENAI_BASE_URL_1'), os.getenv('OPENAI_API_KEY_1'), os.getenv('MODEL_NAME_1')
+    elif index == 2:
+        return os.getenv('OPENAI_BASE_URL_2'), os.getenv('OPENAI_API_KEY_2'), os.getenv('MODEL_NAME_2')
+    elif index == 3:
+        return os.getenv('OPENAI_BASE_URL_3'), os.getenv('OPENAI_API_KEY_3'), os.getenv('MODEL_NAME_3')
+    elif index == 4:
+        return os.getenv('OPENAI_BASE_URL_4'), os.getenv('OPENAI_API_KEY_4'), os.getenv('MODEL_NAME_4')
+    else:
+        return None, None, None
 
 class OpenAI:
     """
@@ -37,12 +48,26 @@ class OpenAI:
                             `OPENAI_ORGANIZATION` global variable.
     """
 
-    def __init__(self):
+    def __init__(self, selected_llm=None):
         """
         Initializes the OpenAI object with the given configuration.
         """
+        selected_base_url, selected_api_key, selected_model_name = get_llm_config(selected_llm)
 
-        self.model_name = MODEL_NAME
+        if selected_base_url:
+            self.base_url = selected_base_url
+        else:
+            self.base_url = BASE_URL
+
+        if selected_api_key:
+            self.api_key = selected_api_key
+        else:
+            self.api_key = OPENAI_API_KEY
+
+        if selected_model_name:
+            self.model_name = selected_model_name
+        else:
+            self.model_name = MODEL_NAME
 
     def chat(self, messages, temperature=0, prefix=""):
         """
@@ -66,7 +91,7 @@ class OpenAI:
             #     messages=messages,
             #     temperature=temperature
             # )
-            client = openai.OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
+            client = openai.OpenAI(base_url=self.base_url, api_key=self.api_key)
             response = client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
@@ -81,7 +106,7 @@ class OpenAI:
                 #     messages=messages,
                 #     temperature=temperature
                 # )
-                client = openai.OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
+                client = openai.OpenAI(base_url=self.base_url, api_key=self.api_key)
                 response = client.chat.completions.create(
                     model=self.model_name,
                     messages=messages,

@@ -111,11 +111,11 @@ def setup_config():
     )
     llm_model = f"Current using model is {MODEL_TYPE}||{MODEL_NAME}||{OPENAI_BASE_URL}"
     embbed_model = f"Current using embbed model is {EMBED_MODEL_TYPE}||{EMBED_MODEL_NAME}||{MODEL_SERVER}"
-    logging.info(llm_model)
-    logging.info(embbed_model)
+    # logging.info(llm_model)
+    # logging.info(embbed_model)
     logging.info(f"args: {args}")
 
-    return args, llm_model, embbed_model
+    return args
 
 
 def setup_pre_run(args):

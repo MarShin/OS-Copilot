@@ -226,13 +226,14 @@ prompt = {
         5. There are two types of subtasks:
                 Python: Python is suited for subtasks that involve complex data handling, analysis, machine learning, or the need to develop cross-platform scripts and applications. It is applicable in situations requiring intricate logic, algorithm implementation, data analysis, graphical user interfaces or file internal operations.
                 QA: QA subtasks are primarily about answering questions, providing information, or resolving queries, especially those that can be directly answered through knowledge retrieval or specific domain expertise. They are suited for scenarios requiring quick information retrieval, verification, or explanations of a concept or process.
-        6. An example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'protein', and add 1 product to cart. Then the reasoning process and JSON that stores the subtasks information are as follows: 
+        6. An example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'protein', and add 1 product to cart, finally go to cart page. Then the reasoning process and JSON that stores the subtasks information are as follows: 
                 Reasoning:
                     1. Access the Website: The first step is to open the HKTV mall website, URL is provided in the task. This is essential to initiate any search or interaction with the site.
                     2. Search for Products: Using the search functionality helps locate relevant products quickly, specifically those related to 'protein'.
                     3. Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
                     4. Select a Product: Selecting a product involves assessing options based on criteria like price, brand, or reviews.
-                    5. Add to Cart: The final step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
+                    5. Add to Cart: The next step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
+                    6. Go to Cart: The final step is to open cart page.
 
                 ```json
                 {
@@ -260,10 +261,15 @@ prompt = {
                         "description": "Add the selected product to cart after pick_one_product.",
                         "dependencies": ["pick_one_product"],
                         "type": "Python"
+                    },
+                    "goto_cart_url" : {
+                        "description": "Go to the page 'https://www.hktvmall.com/hktv/en/cart'",
+                        "dependencies": ["add_item_to_cart"],
+                        "type": "Python"
                     }
                 }
                 ```
-        7. Another example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'coca cola' and '7 up', and add both products to cart. I have only $100 budget for all items. Then the reasoning process and JSON that stores the subtasks information are as follows: 
+        7. Another example to help you better understand the information that needs to be generated: The task is: goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'coca cola' and '7 up', and add both products to cart, finally go to cart page. I have only $100 budget for all items. Then the reasoning process and JSON that stores the subtasks information are as follows: 
                 Reasoning:
                     1. Access the Website: The first step is to open the HKTV mall website, URL is provided in the task. This is essential to initiate any search or interaction with the site.
                     2. Search for Products: Using the search functionality helps locate relevant products quickly, specifically those related to "coca cola."
@@ -274,6 +280,7 @@ prompt = {
                     7. Repeat Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
                     8. Repeat Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews. Since the previous product costs $80, now I left $100 - $80 = $20 budget, I can afford a product with $20.
                     9. Repeat Add to Cart: The next step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
+                    10. Go to Cart: The final step is to open cart page.
 
                 ```json
                 {
@@ -321,11 +328,16 @@ prompt = {
                         "description": "Add the selected product to cart after pick_one_product.",
                         "dependencies": ["pick_one_product_2"],
                         "type": "Python"
+                    },
+                    "goto_cart_url" : {
+                        "description": "Go to the page 'https://www.hktvmall.com/hktv/en/cart'",
+                        "dependencies": ["add_item_to_cart_2"],
+                        "type": "Python"
                     }
                 }
                 ```
 
-        8. Another example to help you better understand the information that needs to be generated: The task is: I want to cook 'egg fried rice', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. Since 'rice' and 'egg' are the ingredients of 'egg fried rice', so the output is ['rice','egg']. Then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'rice' and 'egg', and add all products to cart. Then the reasoning process and JSON that stores the subtasks information are as follows:
+        8. Another example to help you better understand the information that needs to be generated: The task is: I want to cook 'egg fried rice', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. Since 'rice' and 'egg' are the ingredients of 'egg fried rice', so the output is ['rice','egg']. Then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'rice' and 'egg', and add all products to cart, finally go to cart page. Then the reasoning process and JSON that stores the subtasks information are as follows:
                 Reasoning:
                     1. Get the ingredients list: The first step is to get the ingredients list of 'egg fried rice', output the ingredients to ['ingredient 1 ','ingredient 2',...]. For example, 'rice' and 'egg' are the ingredients of 'egg fried rice', so the output is ['rice','egg'].
                     2. Access the Website: Then is to open the HKTV mall website, URL is provided in the task. This is essential to initiate any search or interaction with the site.
@@ -337,6 +349,7 @@ prompt = {
                     8. Repeat Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
                     9. Repeat Select a Product: After viewing the search results, selecting a product involves assessing options based on criteria like price, brand, or reviews.
                     10. Repeat Add to Cart: The next step is to add the chosen product to the shopping cart, which is crucial for the purchasing process.
+                    11. Go to Cart: The final step is to open cart page.
 
                 ```json
                 {
@@ -388,6 +401,11 @@ prompt = {
                     "add_item_to_cart_2" : {
                         "description": "Add the selected product to cart after pick_one_product.",
                         "dependencies": ["pick_one_product_2"],
+                        "type": "Python"
+                    },
+                    "goto_cart_url" : {
+                        "description": "Go to the page 'https://www.hktvmall.com/hktv/en/cart'",
+                        "dependencies": ["add_item_to_cart_2"],
                         "type": "Python"
                     }
                 }
