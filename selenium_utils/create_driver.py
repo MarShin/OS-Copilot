@@ -16,7 +16,7 @@ def create_driver():
         options.add_experimental_option("detach", True)  # Detach the browser
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--window-size=1600,900')
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        driver = webdriver.Chrome(options=options)
         print(f"[{__name__}] Created driver at port=9222")
         return driver
     except Exception as e:

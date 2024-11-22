@@ -9,6 +9,20 @@ from oscopilot.utils import setup_config, setup_pre_run
 from selenium_utils.create_driver import create_driver
 from selenium_utils.reconnect_driver import reconnect_driver
 
+import sys
+class PrintRedirector:
+    def __init__(self, text_widget):
+        self.text_widget = text_widget
+
+    def write(self, message):
+        self.text_widget.config(state=tk.NORMAL)  # Enable editing to insert text
+        self.text_widget.insert(tk.END, message)
+        self.text_widget.config(state=tk.DISABLED)  # Disable editing again
+        self.text_widget.see(tk.END)  # Scroll to the end
+
+    def flush(self):
+        pass  # This is needed for compatibility with Python's print function
+
 # args = setup_config()
 EXIT_COMMANDS = ["exit", "quit", "bye", "goodbye"]
 LLM_DROPDOWN = [
@@ -124,6 +138,7 @@ chat_log = scrolledtext.ScrolledText(windows, width=60, height=20, wrap=tk.WORD,
 # chat_log.insert(tk.END, f"Current args: {args}\n")
 chat_log.grid(row=0, column=0, columnspan=4, padx=10, pady=10, sticky=tk.W)
 chat_log.config(state=tk.DISABLED)  # Make chat_log non-editable
+sys.stdout = PrintRedirector(chat_log)  # Redirect stdout to chat_log
 
 # User input box
 user_input_box = scrolledtext.ScrolledText(windows, width=50, height=5, wrap=tk.WORD, font=custom_font)
