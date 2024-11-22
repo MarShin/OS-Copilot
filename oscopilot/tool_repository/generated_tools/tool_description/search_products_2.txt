@@ -1,1 +1,0 @@
-Search products by locating the input text box, typing the text, and clicking the search button

@@ -1,1 +1,0 @@
-Pick any one of the product and return its product_code

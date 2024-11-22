@@ -54,7 +54,7 @@ class ToolManager:
         # generated_tools: Store the mapping relationship between descriptions and tools (associated through task names)
         self.generated_tools = {}
         # self.generated_tool_repo_dir = generated_tool_repo_dir
-        self.generated_tool_repo_dir = "/home/teem/Desktop/Project/Group6/OS-Copilot/oscopilot/tool_repository/generated_tools"
+        self.generated_tool_repo_dir = "oscopilot/tool_repository/generated_tools"
         
         with open(f"{self.generated_tool_repo_dir}/generated_tools.json") as f2:
             self.generated_tools = json.load(f2)

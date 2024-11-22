@@ -6,7 +6,7 @@ def scrap_products():
     None
     
     Return:
-    The first item of the list
+    None
     """
 
     try:
