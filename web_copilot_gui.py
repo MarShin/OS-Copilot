@@ -19,9 +19,10 @@ LLM_DROPDOWN = [
     ]
 PROMPT_TEMPLATE = {
     "1 item: coca cola": "Goto HKTV mall website in 'https://www.hktvmall.com/hktv/en/', search for 'coca cola' products, then add product to cart, finally go to cart page. Give me the cheapest relevant products.",
-    "2 items: beef & buns, finally go to cart page": "Goto HKTV mall website in 'https://www.hktvmall.com/hktv/en/', search for 'beef' and 'buns' products, then add both products to cart. Give me the relevant products.",
+    "2 items: beef & buns": "Goto HKTV mall website in 'https://www.hktvmall.com/hktv/en/', search for 'beef' and 'buns' products, then add both products to cart, finally go to cart page. Give me the relevant products.",
     "Recipe: hamburger": "I want to make 'hamburger', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. If the output is ['ingredient 1','ingredient 2',...], then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for ingredients, and add all products to cart, finally go to cart page. Give me the cheapest relevant products.",
-    "Recipe: lemonade": "I want to make 'lemonade', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. If the output is ['ingredient 1','ingredient 2',...], then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for ingredients, and add all products to cart, finally go to cart page. Give me the cheapest relevant products."
+    "Recipe: lemonade": "I want to make 'lemonade', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. If the output is ['ingredient 1','ingredient 2',...], then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for ingredients, and add all products to cart, finally go to cart page. Give me the cheapest relevant products.",
+    "Budget: rice & egg": "Goto HKTV mall website in 'https://www.hktvmall.com/hktv/en/', search for 'rice' and 'egg' products, then add both products to cart, finally go to cart page. Give me the relevant products within budget. I only have $80 budget."
 }
 
 def web_copilot_agent(input_text):
