@@ -1,6 +1,6 @@
-def checkout_out_page(btn_class_name="btn-cart"):
+def checkout_out_page():
     """
-    Go to the checkout page of the store.
+    Go to the checkout page of the store by clicking the shopping cart button.
 
     Args:
         btn_class_name(str): the class name of the checkout button
@@ -16,7 +16,7 @@ def checkout_out_page(btn_class_name="btn-cart"):
         driver = reconnect_driver()
 
         # Go to check out page
-        click_btn(driver, btn_class_name)
+        click_btn(driver, btn_class_name="btn-cart")
 
     except Exception as e:
         print(f"[{(__name__)}]: {e}")
