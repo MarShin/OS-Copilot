@@ -1,9 +1,9 @@
-def scrap_products():
+def scrap_products(text):
     """
     Scrape product data including id, name, price, and packing info.
     
     Args:
-    None
+        text(str): the products to search
     
     Return:
     The first item of the list
@@ -28,7 +28,7 @@ def scrap_products():
                 results.append(product_details)
 
         print(f"[{(__name__)}]: Scraped {len(results)} products")
-        save_results_to_json(results)
+        save_results_to_json(text, results)
         print(f"[{(__name__)}]: Saved the results to json ./product_data/product_data.json")
         if results:
             return results

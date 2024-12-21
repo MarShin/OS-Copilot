@@ -8,6 +8,7 @@ from oscopilot import FridayWebExecutor, FridayPlanner, FridayRetriever
 from oscopilot.utils import setup_config, setup_pre_run
 from selenium_utils.create_driver import create_driver
 from selenium_utils.reconnect_driver import reconnect_driver
+from selenium_utils.json_products_data import clean_json_file
 
 # args = setup_config()
 EXIT_COMMANDS = ["exit", "quit", "bye", "goodbye"]
@@ -22,7 +23,8 @@ PROMPT_TEMPLATE = {
     "2 items: beef & buns": "Goto HKTV mall website in 'https://www.hktvmall.com/hktv/en/', search for 'beef' and 'buns' products, then add both products to cart, finally go to cart page. Give me the relevant products.",
     "Recipe: hamburger": "I want to make 'hamburger', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. If the output is ['ingredient 1','ingredient 2',...], then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for ingredients, and add all products to cart, finally go to cart page. Give me the cheapest relevant products.",
     "Recipe: lemonade": "I want to make 'lemonade', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. If the output is ['ingredient 1','ingredient 2',...], then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for ingredients, and add all products to cart, finally go to cart page. Give me the cheapest relevant products.",
-    "Budget: rice & egg": "Goto HKTV mall website in 'https://www.hktvmall.com/hktv/en/', search for 'rice' and 'egg' products, then add both products to cart, finally go to cart page. Give me the relevant products within budget. I only have $80 budget."
+    "Budget: rice & egg": "Goto HKTV mall website in 'https://www.hktvmall.com/hktv/en/', search for 'rice' and 'egg' products, then add both products to cart, finally go to cart page. Give me the relevant products within budget. I only have $80 budget.",
+    "Recipe with budget: lemonade": "I want to make 'lemonade', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. If the output is ['ingredient 1','ingredient 2',...], then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for ingredients, and add all products to cart, finally go to cart page. Give me the relevant products within budget. I only have $80 budget."
 }
 
 def web_copilot_agent(input_text):
@@ -39,6 +41,8 @@ def web_copilot_agent(input_text):
         agent = FridayWebAgent(FridayPlanner, FridayRetriever, FridayWebExecutor, ToolManager, config=args, selected_llm_index=selected_llm_index)
         
         agent.run(task=task)
+        qa_history_str = "\n".join(agent.qa_history)
+        insert_chat_log(f"Web Copilot: {qa_history_str}\n")
 
         # if FridayWebAgent.stop_agent_event.is_set():  # Check if stop event is set
         #     return "Your task was stopped."
@@ -71,6 +75,7 @@ def show_copilot_response():
     threading.Thread(target=run_agent, args=(user_input,), daemon=True).start()
 
 def run_agent(input_text):
+    clean_json_file()
     response_text = web_copilot_agent(input_text)
     insert_chat_log(f"Web Copilot: {response_text}\n")
     start_button.config(state=tk.NORMAL)

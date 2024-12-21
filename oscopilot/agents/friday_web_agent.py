@@ -5,7 +5,7 @@ import logging
 import sys
 from oscopilot.prompts.friday_web_pt import prompt
 from oscopilot.utils import TaskStatusCode, InnerMonologue, ExecutionState, JudgementResult, RepairingResult
-
+from selenium_utils.json_products_data import load_content_from_json
 
 class FridayWebAgent(BaseAgent):
     """
@@ -37,6 +37,7 @@ class FridayWebAgent(BaseAgent):
         self.score = self.config.score
         self.task_status = TaskStatusCode.START
         self.inner_monologue = InnerMonologue()
+        self.qa_history = []
         try:
             check_os_version(self.system_version)
         except ValueError as e:
@@ -188,10 +189,14 @@ class FridayWebAgent(BaseAgent):
             relevant_code = self.retriever.retrieve_tool_code_pair(retrieve_name)
         # task execute step
         if node_type == 'QA':
+            qa_history = "\n".join(self.qa_history)
+            product_data = load_content_from_json()
             if self.planner.tool_num == 1:
-                result = self.executor.question_and_answer_tool(pre_tasks_info, original_task, original_task)
+                result = self.executor.question_and_answer_tool(pre_tasks_info+product_data, original_task, original_task)
             else:
-                result = self.executor.question_and_answer_tool(pre_tasks_info, original_task, description)
+                result = self.executor.question_and_answer_tool(pre_tasks_info+product_data, original_task, description)
+            # if "pick_one_product" in tool_name:
+            self.qa_history.append(result)
             #print(result)
             #logging.info(result)
         else:

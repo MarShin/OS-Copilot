@@ -410,6 +410,67 @@ prompt = {
                     }
                 }
                 ```
+        9. Another example to help you better understand the information that needs to be generated: The task is: I want to cook 'egg fried rice', tell me the recipe, just return the names of ingredients to me only, output the ingredients to ['ingredient 1 ','ingredient 2',...]. Since 'rice' and 'egg' are the ingredients of 'egg fried rice', so the output is ['rice','egg']. Then goto HKTV mall website 'https://www.hktvmall.com/hktv/en/', search for 'rice' and 'egg', and add all products to cart, finally go to cart page. Give me the relevant products within budget. I only have $100 budget. Then the reasoning process and JSON that stores the subtasks information are as follows:
+                Reasoning:
+                    1. Get the ingredients list: The first step is to get the ingredients list of 'egg fried rice', output the ingredients to ['ingredient 1 ','ingredient 2',...]. For example, 'rice' and 'egg' are the ingredients of 'egg fried rice', so the output is ['rice','egg'].
+                    2. Access the Website: Then is to open the HKTV mall website, URL is provided in the task. This is essential to initiate any search or interaction with the site.
+                    3. Search for ingredient 1 'rice': Using the search functionality helps locate relevant products quickly, specifically those related to 'rice'.
+                    4. Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
+                    5. Repeat Search for ingredient 2 'egg': Using the search functionality helps locate relevant products quickly, specifically those related to 'egg'.
+                    6. Repeat Get information from Product: Using scrap_products function to get the product_code, product_name, product_price and packing_spec.
+                    7. Select all Products: After viewing the products results, selecting all products involve assessing options based on criteria like price, brand, or reviews, especially the total cost of all products does not exceed $100 budget constraint. If no combination of products fits within the budget $100, choose the combination that comes closest to the $100 limit.
+                    8. Add all selected products to Cart: The next step is to add all the chosen products to the shopping cart, which is crucial for the purchasing process.
+                    9. Go to Cart: The final step is to open cart page.
+
+                ```json
+                {
+                    "get_ingredients_list" : {
+                        "description": "Get the ingredients list of 'egg fried rice', output the ingredients to ['rice','egg',...].",
+                        "dependencies": [],
+                        "type" : "QA"
+                    },
+                    "goto_url" : {
+                        "description": "Go to the website 'https://www.hktvmall.com/hktv/en/' for later interactions.",
+                        "dependencies": [get_ingredients_list],
+                        "type" : "Python"
+                    },
+                    "search_products_1" : {
+                        "description": "search the 'rice' by locating the search bar, input text, and click enter.",
+                        "dependencies": ["goto_url"],
+                        "type": "Python"
+                    },
+                    "scrap_products_1" : {
+                        "description": "Scrap the available products data",
+                        "dependencies": ["search_products_1"],
+                        "type": "Python"
+                    },
+                    "search_products_2" : {
+                        "description": "search the 'egg' by locating the search bar, input text, and click enter.",
+                        "dependencies": ["scrap_products_1"],
+                        "type": "Python"
+                    },
+                    "scrap_products_2" : {
+                        "description": "Scrap the available products data",
+                        "dependencies": ["search_products_2"],
+                        "type": "Python"
+                    },
+                    "pick_all_products" : {
+                        "description": "Pick all products based on the requested requirements of 'rice' and 'egg', especially the total cost of all products does not exceed $100 budget constraint. If no combination of products fits within the budget $100, choose the combination that comes closest to the $100 limit. Then return their product codes.",
+                        "dependencies": ["scrap_products_2"],
+                        "type": "QA"
+                    },
+                    "add_all_items_to_cart" : {
+                        "description": "Add all the selected products to cart.",
+                        "dependencies": ["pick_all_products"],
+                        "type": "Python"
+                    },
+                    "goto_cart_url" : {
+                        "description": "Go to the page 'https://www.hktvmall.com/hktv/en/cart'",
+                        "dependencies": ["add_all_items_to_cart"],
+                        "type": "Python"
+                    }
+                }
+                ```
 
         And you should also follow the following criteria:
         1. Try to break down the task into as few subtasks as possible.
