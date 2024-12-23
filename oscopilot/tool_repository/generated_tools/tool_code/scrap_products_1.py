@@ -1,12 +1,12 @@
-def scrap_products_1(search_text):
+def scrap_products_1(text):
     """
-    Scrap the available products data after searching for a specific product.
+    Scrap the available products data.
 
     Args:
-        search_text (str): The text to search for products.
+        text (str): The products to search.
 
     Returns:
-        The first item of the scraped products list.
+        list: The scraped product data.
     """
     try:
         from selenium_utils.reconnect_driver import reconnect_driver
@@ -17,18 +17,6 @@ def scrap_products_1(search_text):
 
         # Reconnect to current browser
         driver = reconnect_driver()
-
-        # Search for products
-        search_input = driver.find_element(By.CLASS_NAME, "SuggestionSearch-input")
-        search_input.clear()  # Clear any existing text
-        search_input.send_keys(search_text)  # Type the search text
-
-        # Locate the search button by its class name and click it
-        from selenium_utils.click_btn import click_btn
-        click_btn(driver, btn_class_name="SuggestionSearch-button")
-        time.sleep(2)
-        print(f"[{(__name__)}]: successfully searched: {search_text}")
-
         # Find all product elements
         product_items = driver.find_elements(By.CLASS_NAME, 'product-brief-wrapper')
         results = []
@@ -39,13 +27,12 @@ def scrap_products_1(search_text):
                 results.append(product_details)
 
         print(f"[{(__name__)}]: Scraped {len(results)} products")
-        save_results_to_json(results)
+        save_results_to_json(text, results)
         print(f"[{(__name__)}]: Saved the results to json ./product_data/product_data.json")
         if results:
-            return results[0]
+            return results
         else:
             return None
-
     except Exception as e:
         print(f"[{(__name__)}]: Unable to scrap products: {e}")
         return None

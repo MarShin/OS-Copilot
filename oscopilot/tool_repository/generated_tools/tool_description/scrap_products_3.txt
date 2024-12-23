@@ -1,1 +1,1 @@
-Scrap the available products data after searching for a specific product
+Scrap the available products data
